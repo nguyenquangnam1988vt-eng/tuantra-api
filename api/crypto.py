@@ -1,6 +1,6 @@
 import os
-import base64
 import json
+import base64
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
@@ -15,15 +15,13 @@ def encrypt(data: dict) -> str:
         backend=default_backend()
     )
 
-    encryptor = cipher.encryptor()
+    enc = cipher.encryptor()
 
     plaintext = json.dumps(data).encode()
 
-    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
+    ciphertext = enc.update(plaintext) + enc.finalize()
 
-    result = iv + encryptor.tag + ciphertext
-
-    return base64.b64encode(result).decode()
+    return base64.b64encode(iv + enc.tag + ciphertext).decode()
 
 
 def decrypt(token: str) -> dict:
@@ -39,8 +37,8 @@ def decrypt(token: str) -> dict:
         backend=default_backend()
     )
 
-    decryptor = cipher.decryptor()
+    dec = cipher.decryptor()
 
-    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+    plaintext = dec.update(ciphertext) + dec.finalize()
 
     return json.loads(plaintext.decode())
