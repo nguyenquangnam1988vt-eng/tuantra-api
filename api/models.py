@@ -49,3 +49,12 @@ class TrackPayload(BaseModel):
     lng: float
     timestamp: int
 
+class DrawingPayload(BaseModel):
+    points: List[Dict[str, float]]    
+    color: str
+    weight: int
+    author: str
+    authorId: str
+    timestamp: int
+    type: str   
+
