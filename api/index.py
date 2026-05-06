@@ -3,8 +3,11 @@ from fastapi import FastAPI
 from api.routes.alerts import router as alerts
 from api.routes.incidents import router as incidents
 from api.routes.markers import router as markers
+from api.firebase import init_firebase
 
 app = FastAPI()
+
+init_firebase()
 
 app.include_router(alerts)
 app.include_router(incidents)
