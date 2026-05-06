@@ -9,7 +9,6 @@ from api.routes.tactical_plans import router as tactical_plans
 from api.routes.arrow_logs import router as arrow_logs
 from api.routes.tracks import router as tracks
 from api.firebase import init_firebase
-from api.routes.drawings import router as drawings   
 
 app = FastAPI()
 
@@ -24,7 +23,6 @@ app.include_router(officers)
 app.include_router(users)
 app.include_router(tactical_plans)
 app.include_router(arrow_logs)
-app.include_router(drawings)
 
 @app.get("/api/health")
 async def health():
