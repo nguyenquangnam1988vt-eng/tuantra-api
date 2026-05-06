@@ -1,4 +1,8 @@
 from pydantic import BaseModel
+from pydantic import BaseModel
+
+class EncryptedRequest(BaseModel):
+    data: str
 
 class EncryptedRequest(BaseModel):
     data: str
