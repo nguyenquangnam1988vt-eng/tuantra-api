@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from firebase_admin import db
 import time
-import js
+import json
 from api.models import EncryptedRequest, SpecialPointPayload
 from api.crypto import decrypt
 from api.deps import verify_token
