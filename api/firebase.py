@@ -12,11 +12,10 @@ def init_firebase():
 
     if not cred_json:
         raise Exception("FIREBASE_CRED_JSON missing")
-    if not db_url:
-        raise Exception("FIREBASE_DATABASE_URL missing")
 
-    cred = credentials.Certificate(json.loads(cred_json))
+    cred_data = json.loads(cred_json)
 
-    firebase_admin.initialize_app(cred, {
-        "databaseURL": db_url
-    })
+    firebase_admin.initialize_app(
+        credentials.Certificate(cred_data),
+        {"databaseURL": db_url}
+    )
