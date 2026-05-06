@@ -1,29 +1,29 @@
 from fastapi import APIRouter, Depends, HTTPException
 from firebase_admin import db
 import time
-import json
 
-from api.models import EncryptedRequest
-from api.crypto import decrypt_message
-from api.deps import verify_token
+from api.models import AlertModel
+from api.deps import verify_token, get_user_role
+from api.firebase import init_firebase
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
 @router.post("/")
-async def create_alert(enc: EncryptedRequest, user=Depends(verify_token)):
-    uid = user["uid"]
+async def create_alert(data: AlertModel, user=Depends(verify_token)):
+    init_firebase()
 
-    try:
-        data = json.loads(decrypt_message(enc.data))
-    except:
-        raise HTTPException(400, "Invalid encrypted data")
+    uid = user["uid"]
+    role = get_user_role(uid)
+
+    if role not in ["officer", "commander", "admin"]:
+        raise HTTPException(403, "No permission")
 
     db.reference("alerts").push({
-        "lat": data["lat"],
-        "lng": data["lng"],
-        "name": data["name"],
-        "created_by": uid,
-        "timestamp": int(time.time() * 1000)
+        "lat": data.lat,
+        "lng": data.lng,
+        "name": data.name,
+        "timestamp": int(time.time() * 1000),
+        "created_by": uid
     })
 
     return {"success": True}
