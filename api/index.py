@@ -3,8 +3,12 @@ from fastapi import FastAPI
 from api.routes.alerts import router as alerts
 from api.routes.incidents import router as incidents
 from api.routes.markers import router as markers
+from api.routes.officers import router as officers
+from api.routes.users import router as users
+from api.routes.tactical_plans import router as tactical_plans
+from api.routes.arrow_logs import router as arrow_logs
+from api.routes.tracks import router as tracks
 from api.firebase import init_firebase
-from api.routes import officers, users, tactical_plans, arrow_logs, tracks
 
 app = FastAPI()
 
@@ -18,7 +22,6 @@ app.include_router(users)
 app.include_router(tactical_plans)
 app.include_router(arrow_logs)
 app.include_router(tracks)
-
 
 @app.get("/api/health")
 async def health():
