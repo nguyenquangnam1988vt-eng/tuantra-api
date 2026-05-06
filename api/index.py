@@ -2,21 +2,27 @@ import os
 import json
 import firebase_admin
 from firebase_admin import credentials, db
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from dotenv import load_dotenv
 
 from api.routes import alerts, markers, incidents
 
 load_dotenv()
 
+# --- Init Firebase ---
 if not firebase_admin._apps:
-    cred_json = json.loads(os.getenv("FIREBASE_CRED_JSON"))
-    cred = credentials.Certificate(cred_json)
+    cred_json = os.getenv("FIREBASE_CRED_JSON")
+
+    if not cred_json:
+        raise Exception("Missing FIREBASE_CRED_JSON")
+
+    cred = credentials.Certificate(json.loads(cred_json))
+
     firebase_admin.initialize_app(cred, {
         'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
     })
 
-app = FastAPI(title="Tuần tra API")
+app = FastAPI()
 
 app.include_router(alerts.router)
 app.include_router(markers.router)
