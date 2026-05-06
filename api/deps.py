@@ -10,8 +10,7 @@ async def verify_token(authorization: str = Header(None)):
 
     try:
         token = authorization.split(" ")[1]
-        decoded = auth.verify_id_token(token)
-        return decoded
+        return auth.verify_id_token(token)
     except:
         raise HTTPException(401, "Invalid token")
 
