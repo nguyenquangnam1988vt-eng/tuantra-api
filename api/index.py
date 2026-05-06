@@ -1,74 +1,67 @@
-# api/index.py
-import os
-import json
-from fastapi import FastAPI, Header, HTTPException, Depends
-from firebase_admin import credentials, auth, db
-import firebase_admin
-from pydantic import BaseModel
+from fastapi import FastAPI, Depends, HTTPException
+from firebase_admin import db
+import time
 
-# --- Khởi tạo Firebase ---
-if not firebase_admin._apps:
-    cred_json = os.getenv("FIREBASE_CRED_JSON")
-    if not cred_json:
-        raise Exception("Missing FIREBASE_CRED_JSON environment variable")
-    cred = credentials.Certificate(json.loads(cred_json))
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
-    })
+from api.models import AlertModel, MarkerModel, IncidentModel
+from api.deps import verify_token, get_user_role
+from api.firebase import init_firebase
 
 app = FastAPI()
 
-# --- Models ---
-class AlertModel(BaseModel):
-    lat: float
-    lng: float
-    name: str
-
-class MarkerModel(BaseModel):
-    lat: float
-    lng: float
-
-class IncidentModel(BaseModel):
-    lat: float
-    lng: float
-    image_url: str
-
-# --- Xác thực ---
-async def verify_token(authorization: str = Header(None)):
-    if not authorization:
-        raise HTTPException(401, "Missing token")
-    try:
-        token = authorization.split(" ")[1]
-        decoded = auth.verify_id_token(token)
-        return decoded
-    except:
-        raise HTTPException(401, "Invalid token")
-
-# --- Routes ---
+# ---------------- HEALTH ----------------
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
 
+# ---------------- ALERT ----------------
 @app.post("/api/alerts")
-async def create_alert(alert: AlertModel, user=Depends(verify_token)):
-    data = alert.dict()
-    data["created_by"] = user["uid"]
-    data["timestamp"] = {"sv": "timestamp"}
-    ref = db.reference("alerts").push(data)
-    return {"success": True, "id": ref.key}
+async def create_alert(data: AlertModel, user=Depends(verify_token)):
+    init_firebase()
 
+    uid = user["uid"]
+    role = get_user_role(uid)
+
+    if role not in ["officer", "commander", "admin"]:
+        raise HTTPException(403, "No permission")
+
+    db.reference("alerts").push({
+        "lat": data.lat,
+        "lng": data.lng,
+        "name": data.name,
+        "created_by": uid,
+        "timestamp": int(time.time() * 1000)
+    })
+
+    return {"success": True}
+
+# ---------------- MARKER ----------------
 @app.post("/api/markers")
-async def create_marker(marker: MarkerModel, user=Depends(verify_token)):
-    data = marker.dict()
-    data["created_by"] = user["uid"]
-    data["timestamp"] = {"sv": "timestamp"}
-    ref = db.reference(f"markers/{user['uid']}").push(data)
-    return {"success": True, "id": ref.key}
+async def create_marker(data: MarkerModel, user=Depends(verify_token)):
+    init_firebase()
 
+    uid = user["uid"]
+
+    db.reference(f"markers/{uid}").push({
+        "lat": data.lat,
+        "lng": data.lng,
+        "timestamp": int(time.time() * 1000)
+    })
+
+    return {"success": True}
+
+# ---------------- INCIDENT ----------------
 @app.post("/api/incidents")
-async def create_incident(incident: IncidentModel, user=Depends(verify_token)):
-    data = incident.dict()
-    data["created_by"] = user["uid"]
-    data["timestamp"] = {"sv": "timestamp"}
-    ref = db.reference("incidents").push(data)
-    return {"success": True, "id": ref.key}
+async def create_incident(data: IncidentModel, user=Depends(verify_token)):
+    init_firebase()
+
+    uid = user["uid"]
+
+    db.reference("incidents").push({
+        "lat": data.lat,
+        "lng": data.lng,
+        "image_url": data.image_url,
+        "created_by": uid,
+        "timestamp": int(time.time() * 1000)
+    })
+
+    return {"success": True}
