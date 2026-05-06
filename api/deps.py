@@ -1,5 +1,5 @@
 from fastapi import Header, HTTPException
-from firebase_admin import auth, db
+from firebase_admin import auth
 from api.firebase import init_firebase
 
 async def verify_token(authorization: str = Header(None)):
@@ -10,13 +10,14 @@ async def verify_token(authorization: str = Header(None)):
 
     try:
         token = authorization.split(" ")[1]
-        decoded = auth.verify_id_token(token)
-        return decoded
+        return auth.verify_id_token(token)
     except:
         raise HTTPException(401, "Invalid token")
 
 
 def get_user_role(uid: str):
+    from firebase_admin import db
     init_firebase()
+
     role = db.reference(f"users/{uid}/role").get()
     return role or "officer"
