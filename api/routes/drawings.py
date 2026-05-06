@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from firebase_admin import db
 import time
+import json
+
 from api.models import EncryptedRequest
-from api.crypto import decrypt
+from api.crypto import decrypt_message
 from api.deps import verify_token
 
 router = APIRouter(prefix="/api/drawings", tags=["drawings"])
