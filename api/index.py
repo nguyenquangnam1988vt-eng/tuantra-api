@@ -19,11 +19,11 @@ def startup():
 app.include_router(alerts)
 app.include_router(incidents)
 app.include_router(markers)
-app.include_router(officers)
-app.include_router(users)
-app.include_router(tactical_plans)
-app.include_router(arrow_logs)
-app.include_router(tracks)
+#app.include_router(officers)
+#app.include_router(users)
+#app.include_router(tactical_plans)
+#app.include_router(arrow_logs)
+#app.include_router(tracks)
 
 @app.get("/api/health")
 async def health():
