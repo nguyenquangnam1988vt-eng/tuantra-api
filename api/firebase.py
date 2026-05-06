@@ -1,21 +1,18 @@
 import os
 import json
 import firebase_admin
-from firebase_admin import credentials
+from firebase_admin import credentials, db
 
 def init_firebase():
     if firebase_admin._apps:
         return
 
     cred_json = os.getenv("FIREBASE_CRED_JSON")
-    db_url = os.getenv("FIREBASE_DATABASE_URL")
-
     if not cred_json:
-        raise Exception("FIREBASE_CRED_JSON missing")
+        raise Exception("Missing FIREBASE_CRED_JSON")
 
-    cred_data = json.loads(cred_json)
+    cred = credentials.Certificate(json.loads(cred_json))
 
-    firebase_admin.initialize_app(
-        credentials.Certificate(cred_data),
-        {"databaseURL": db_url}
-    )
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": os.getenv("FIREBASE_DATABASE_URL")
+    })
