@@ -12,7 +12,9 @@ from api.firebase import init_firebase
 
 app = FastAPI()
 
-init_firebase()
+@app.on_event("startup")
+def startup():
+    init_firebase()
 
 app.include_router(alerts)
 app.include_router(incidents)
