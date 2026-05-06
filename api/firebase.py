@@ -11,9 +11,9 @@ def init_firebase():
     db_url = os.getenv("FIREBASE_DATABASE_URL")
 
     if not cred_json:
-        raise Exception("Missing FIREBASE_CRED_JSON")
+        raise Exception("FIREBASE_CRED_JSON missing")
     if not db_url:
-        raise Exception("Missing FIREBASE_DATABASE_URL")
+        raise Exception("FIREBASE_DATABASE_URL missing")
 
     cred = credentials.Certificate(json.loads(cred_json))
 
