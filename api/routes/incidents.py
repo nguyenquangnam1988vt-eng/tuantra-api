@@ -4,18 +4,21 @@ import time
 
 from api.models import IncidentModel
 from api.deps import verify_token
+from api.firebase import init_firebase
 
 router = APIRouter(prefix="/api/incidents", tags=["incidents"])
 
-@router.post("")
+@router.post("/")
 async def create_incident(data: IncidentModel, user=Depends(verify_token)):
+    init_firebase()
+
     uid = user["uid"]
 
     db.reference("incidents").push({
         "lat": data.lat,
         "lng": data.lng,
         "image_url": data.image_url,
-        "timestamp": int(time.time()*1000),
+        "timestamp": int(time.time() * 1000),
         "created_by": uid
     })
 
