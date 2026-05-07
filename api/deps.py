@@ -1,5 +1,5 @@
 from fastapi import Header, HTTPException, Depends
-from firebase_admin import auth
+from firebase_admin import auth, db
 from api.firebase import init_firebase
 
 
@@ -30,7 +30,14 @@ async def verify_token(authorization: str = Header(None)):
 
 
 async def get_user_role(decoded_token=Depends(verify_token)):
-    role = decoded_token.get("role")
+    uid = decoded_token["uid"]
+
+    user_data = db.reference(f"users/{uid}").get()
+
+    if not user_data:
+        raise HTTPException(403, "User not found")
+
+    role = user_data.get("role")
 
     if not role:
         raise HTTPException(403, "Role not found")
