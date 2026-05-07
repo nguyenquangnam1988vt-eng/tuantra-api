@@ -1,15 +1,8 @@
-from fastapi import Header, HTTPException
+from fastapi import Header, HTTPException, Depends
 from firebase_admin import auth
 from api.firebase import init_firebase
 
-def get_user_role(decoded_token):
-    role = decoded_token.get("role")
 
-    if not role:
-        raise HTTPException(403, "Role not found")
-
-    return role
-    
 async def verify_token(authorization: str = Header(None)):
     init_firebase()
 
@@ -43,3 +36,12 @@ async def verify_token(authorization: str = Header(None)):
     except Exception as e:
         print("❌ VERIFY ERROR:", repr(e))
         raise HTTPException(401, f"Invalid token: {str(e)}")
+
+
+async def get_user_role(decoded_token=Depends(verify_token)):
+    role = decoded_token.get("role")
+
+    if not role:
+        raise HTTPException(403, "Role not found")
+
+    return role
