@@ -4,6 +4,7 @@ from api.firebase import init_firebase
 
 async def verify_token(authorization: str = Header(None)):
     init_firebase()
+    print("📩 RAW AUTH HEADER:", authorization)  # 👈 THÊM DÒNG NÀY
 
     if not authorization:
         raise HTTPException(401, "Missing token")
