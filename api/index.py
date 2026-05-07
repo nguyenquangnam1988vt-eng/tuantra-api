@@ -12,6 +12,7 @@ from api.firebase import init_firebase
 from api.routes.drawings import router as drawings 
 from api.routes.move_orders import router as move_orders
 from api.routes.special_points import router as special_points
+from fastapi.middleware.cors import CORSMiddleware 
 from api.firebase import init_firebase
 
 app = FastAPI()
