@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/arrow-logs", tags=["arrow-logs"])
 
 @router.post("/")
 async def create_arrow_log(enc: EncryptedRequest, user=Depends(verify_token)):
-    data = decrypt(enc.data)
+    data = json.loads(decrypt_message(enc.data))
     db.reference("arrow_logs").push({
         "action": data["action"],
         "drawingId": data.get("drawingId"),
