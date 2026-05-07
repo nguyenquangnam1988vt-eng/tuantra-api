@@ -6,8 +6,6 @@ from api.firebase import init_firebase
 async def verify_token(authorization: str = Header(None)):
     init_firebase()
 
-    print("AUTH HEADER:", authorization)
-
     if not authorization:
         raise HTTPException(401, "Missing Authorization header")
 
@@ -22,14 +20,7 @@ async def verify_token(authorization: str = Header(None)):
         if scheme.lower() != "bearer":
             raise Exception("Authorization must start with Bearer")
 
-        if not token:
-            raise Exception("Empty token")
-
-        print("TOKEN PREFIX:", token[:25])
-
         decoded = auth.verify_id_token(token)
-
-        print("TOKEN OK UID:", decoded.get("uid"))
 
         return decoded
 
