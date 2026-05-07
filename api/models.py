@@ -57,3 +57,26 @@ class DrawingPayload(BaseModel):
     authorId: str
     timestamp: int
     type: str   
+    
+class MoveOrderPayload(BaseModel):
+    officerId: str
+    fromLat: float
+    fromLng: float
+    toLat: float
+    toLng: float
+    commanderName: str
+    timestamp: int
+    status: str = "active"
+    note: str = ""
+
+class SpecialPointPayload(BaseModel):
+    lat: float
+    lng: float
+    type: str
+    typeLabel: str
+    icon: str
+    color: str
+    note: str
+    createdBy: str
+    createdById: str
+    timestamp: int
