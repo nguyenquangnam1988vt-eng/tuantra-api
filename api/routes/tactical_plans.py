@@ -9,10 +9,15 @@ from api.deps import verify_token, get_user_role
 
 router = APIRouter(prefix="/api/tactical-plans", tags=["tactical-plans"])
 
+
 @router.post("/")
-async def create_tactical_plan(enc: EncryptedRequest, user=Depends(verify_token)):
+async def create_tactical_plan(
+    enc: EncryptedRequest,
+    user=Depends(verify_token),
+    role=Depends(get_user_role)
+):
     uid = user["uid"]
-    role = get_user_role(uid)
+
     if role not in ["commander", "admin"]:
         raise HTTPException(403, "Permission denied")
 
@@ -22,6 +27,7 @@ async def create_tactical_plan(enc: EncryptedRequest, user=Depends(verify_token)
         raise HTTPException(400, "Invalid encrypted data")
 
     plan_id = data["plan_id"]
+
     db.reference(f"tactical_plans/{plan_id}").set({
         "created_by": uid,
         "created_by_name": data.get("created_by_name", ""),
