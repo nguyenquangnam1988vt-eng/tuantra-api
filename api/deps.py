@@ -8,24 +8,30 @@ async def verify_token(authorization: str = Header(None)):
     print("AUTH HEADER:", authorization)
 
     if not authorization:
-        raise HTTPException(401, "Missing token")
+        raise HTTPException(401, "Missing Authorization header")
 
     try:
         parts = authorization.split(" ")
 
         if len(parts) != 2:
-            raise Exception(f"Bad auth format: {authorization}")
+            raise Exception(f"Invalid auth format: {authorization}")
 
-        token = parts[1]
+        scheme, token = parts
 
-        print("TOKEN START:", token[:20])
+        if scheme.lower() != "bearer":
+            raise Exception("Authorization must start with Bearer")
+
+        if not token:
+            raise Exception("Empty token")
+
+        print("TOKEN PREFIX:", token[:25])
 
         decoded = auth.verify_id_token(token)
 
-        print("TOKEN OK:", decoded.get("uid"))
+        print("TOKEN OK UID:", decoded.get("uid"))
 
         return decoded
 
     except Exception as e:
-        print("❌ VERIFY ERROR:", str(e))
+        print("❌ VERIFY ERROR:", repr(e))
         raise HTTPException(401, f"Invalid token: {str(e)}")
