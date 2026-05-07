@@ -47,7 +47,7 @@ async def update_special_point(point_id: str, enc: EncryptedRequest, user=Depend
         raise HTTPException(403, "Chỉ huy hoặc admin mới được sửa điểm đặc biệt")
 
     try:
-        data = decrypt(enc.data)
+        data = decrypt_message(enc.data)
     except Exception:
         raise HTTPException(400, "Invalid encrypted data")
 
@@ -78,7 +78,7 @@ async def set_visibility(enc: EncryptedRequest, user=Depends(verify_token)):
         raise HTTPException(403, "Chỉ huy hoặc admin mới được thay đổi hiển thị")
 
     try:
-        data = decrypt(enc.data)
+        data = decrypt_message(enc.data)
         visible = data.get("visible", True)
     except Exception:
         raise HTTPException(400, "Invalid encrypted data")
