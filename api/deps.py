@@ -4,16 +4,35 @@ from api.firebase import init_firebase
 
 async def verify_token(authorization: str = Header(None)):
     init_firebase()
-    print("📩 RAW AUTH HEADER:", authorization)  # 👈 THÊM DÒNG NÀY
+
+    print("📩 RAW AUTH HEADER:", authorization)
 
     if not authorization:
         raise HTTPException(401, "Missing token")
 
     try:
-        token = authorization.split(" ")[1]
-        print("🔑 TOKEN TO VERIFY:", token)  # 👈 THÊM DÒNG NÀY
-        return auth.verify_id_token(token)
-    except:
+        parts = authorization.split(" ")
+
+        # 🔥 thêm check an toàn
+        if len(parts) != 2:
+            print("❌ AUTH FORMAT WRONG:", parts)
+            raise HTTPException(401, "Invalid auth format")
+
+        token = parts[1]
+
+        print("🔑 TOKEN TO VERIFY:", token[:50], "...")
+
+        decoded = auth.verify_id_token(token)
+
+        # 🔥 LOG QUAN TRỌNG NHẤT
+        print("👤 UID:", decoded.get("uid"))
+        print("🏷️ AUD:", decoded.get("aud"))
+        print("🔥 FIREBASE APP:", decoded.get("firebase"))
+
+        return decoded
+
+    except Exception as e:
+        print("❌ VERIFY ERROR:", str(e))
         raise HTTPException(401, "Invalid token")
 
 
