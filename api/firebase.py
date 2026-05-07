@@ -17,6 +17,7 @@ def init_firebase():
         cred_dict = json.loads(cred_json)
 
         print("📦 Firebase project:", cred_dict.get("project_id"))
+        print("PROJECT:", cred_dict.get("project_id"))
 
         cred = credentials.Certificate(cred_dict)
 
