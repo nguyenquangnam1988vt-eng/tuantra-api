@@ -1,5 +1,6 @@
 fastapi
 uvicorn
 firebase-admin
-python-dotenv
+python-multipart
 cryptography
+python-dotenv
