@@ -35,7 +35,6 @@ async def verify_token(authorization: str = Header(None)):
         print("❌ VERIFY ERROR:", str(e))
         raise HTTPException(401, "Invalid token")
 
-
 def get_user_role(uid: str):
     from firebase_admin import db
     init_firebase()
