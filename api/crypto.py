@@ -3,6 +3,8 @@ import base64
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
+GROUP_KEY = None
+
 def get_group_key():
     key = os.getenv("GROUP_KEY")
 
