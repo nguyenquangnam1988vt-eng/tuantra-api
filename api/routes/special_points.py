@@ -3,7 +3,7 @@ from firebase_admin import db
 import time
 import json
 from api.models import EncryptedRequest
-from api.crypto import decrypt
+from api.crypto import decrypt_message
 from api.deps import verify_token, get_user_role
 
 router = APIRouter(prefix="/api/special-points", tags=["special-points"])
