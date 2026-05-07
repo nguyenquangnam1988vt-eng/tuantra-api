@@ -12,12 +12,30 @@ from api.firebase import init_firebase
 from api.routes.drawings import router as drawings 
 from api.routes.move_orders import router as move_orders
 from api.routes.special_points import router as special_points
+from api.firebase import init_firebase
 
 app = FastAPI()
+
+# Cấu hình CORS
+origins = [
+    "https://tuantrathanhmieunew.streamlit.app",
+    "http://localhost:8501",  # nếu test local
+    "https://tuantra-thanh-mieu-new.streamlit.app",  # tên miền chính xác
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # hoặc ["*"] để cho phép tất cả (chỉ test)
+    allow_credentials=True,
+    allow_methods=["*"],            # cho phép tất cả method (GET, POST, OPTIONS, ...)
+    allow_headers=["*"],            # cho phép tất cả header
+)
 
 @app.on_event("startup")
 def startup():
     init_firebase()
+
+
 
 app.include_router(alerts)
 app.include_router(incidents)
