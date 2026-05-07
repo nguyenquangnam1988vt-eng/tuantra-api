@@ -13,7 +13,7 @@ async def create_move_order(enc: EncryptedRequest, user=Depends(verify_token)):
     uid = user["uid"]
     try:
         # Giải mã và parse JSON
-        decrypted_str = decrypt(enc.data)  # giả sử decrypt trả về string JSON
+        decrypted_str = decrypt_message(enc.data)  # giả sử decrypt trả về string JSON
         data = json.loads(decrypted_str) if isinstance(decrypted_str, str) else decrypted_str
     except Exception as e:
         raise HTTPException(400, f"Invalid encrypted data: {e}")
