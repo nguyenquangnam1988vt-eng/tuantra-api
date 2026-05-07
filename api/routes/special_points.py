@@ -16,7 +16,7 @@ async def create_special_point(enc: EncryptedRequest, user=Depends(verify_token)
         raise HTTPException(403, "Chỉ huy hoặc admin mới được thêm điểm đặc biệt")
 
     try:
-        data = decrypt(enc.data)
+        data = decrypt_message(enc.data)
     except Exception:
         raise HTTPException(400, "Invalid encrypted data")
 
